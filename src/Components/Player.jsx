@@ -519,7 +519,8 @@ function NowPlaying(props) {
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] shadow-lg md:h-10 md:w-10 md:rounded-xl">
           <Music2 size={16} className="text-white md:h-5 md:w-5" />
         </span>
-          <span className="block font-display text-lg font-extrabold leading-none text-[var(--text)] md:text-xl">
+        <span className="block max-w-[150px] truncate">
+          <span className="block truncate font-display text-base font-extrabold leading-none text-[var(--text)] md:text-xl">
             ALG<span className="text-[var(--accent)]">Music</span>
           </span>
         </span>
