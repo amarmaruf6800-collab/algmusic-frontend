@@ -232,8 +232,9 @@ export default function Player({
     } catch { }
   };
 
-  const seek = (e) => {
-    const rect = progressRef.current.getBoundingClientRect();
+  const seek = (e, target = progressRef.current) => {
+    if (!target || !duration) return;
+    const rect = target.getBoundingClientRect();
     const ratio = cn_clamp((e.clientX - rect.left) / rect.width, 0, 1);
     const t = ratio * duration;
     setCurrentTime(t);
@@ -352,11 +353,16 @@ export default function Player({
               </span>
               <div
                 ref={progressRef}
-                onClick={seek}
-                className="group relative h-1.5 flex-1 cursor-pointer rounded-full bg-white/12"
+                onPointerDown={(e) => {
+                  e.currentTarget.setPointerCapture?.(e.pointerId);
+                  seek(e, e.currentTarget);
+                }}
+                onPointerMove={(e) => e.buttons === 1 && seek(e, e.currentTarget)}
+                className="group relative flex h-8 flex-1 cursor-pointer touch-none items-center rounded-full bg-transparent"
               >
+                <div className="absolute inset-x-0 h-1.5 rounded-full bg-white/12" />
                 <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
+                  className="absolute left-0 h-1.5 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
                   style={{ width: `${progressPct}%` }}
                 />
                 <div
@@ -581,14 +587,16 @@ function NowPlaying(props) {
           <div className="mt-5 w-full max-w-md md:mt-10">
             <div
               ref={barRef}
-              onClick={(e) => {
-                const r = e.currentTarget.getBoundingClientRect();
-                seek({ clientX: r.left + (progressPct / 100) * r.width });
+              onPointerDown={(e) => {
+                e.currentTarget.setPointerCapture?.(e.pointerId);
+                seek(e, e.currentTarget);
               }}
-              className="group relative h-1.5 w-full cursor-pointer rounded-full bg-white/12"
+              onPointerMove={(e) => e.buttons === 1 && seek(e, e.currentTarget)}
+              className="group relative flex h-9 w-full cursor-pointer touch-none items-center rounded-full"
             >
+              <div className="absolute inset-x-0 h-1.5 rounded-full bg-white/12" />
               <div
-                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
+                className="absolute left-0 h-1.5 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)]"
                 style={{ width: `${progressPct}%` }}
               />
               <div
