@@ -76,6 +76,7 @@ function App() {
 
   /* ========================== NAVIGATION ========================== */
   const [currentPage, setCurrentPage] = useState("home");
+  const [showNowPlaying, setShowNowPlaying] = useState(false);
 
   const isPopState = useRef(false);
   const isFirstNavigation = useRef(true);
@@ -96,6 +97,7 @@ function App() {
         ? event.state.page
         : "home";
 
+      setShowNowPlaying(Boolean(event.state?.algmusic && event.state.nowPlaying));
       isPopState.current = page !== lastNavigatedPage.current;
       setCurrentPage(page);
     };
@@ -140,8 +142,35 @@ function App() {
   const [playbackKey, setPlaybackKey] = useState(0);
 
   /* ===================== FULLSCREEN / QUEUE ====================== */
-  const [showNowPlaying, setShowNowPlaying] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
+  const hasNowPlayingHistory = useRef(false);
+
+  useEffect(() => {
+    const currentState = window.history.state;
+    if (showNowPlaying) {
+      if (currentState?.algmusic && currentState.nowPlaying) {
+        hasNowPlayingHistory.current = true;
+        return;
+      }
+
+      window.history.pushState(
+        {
+          algmusic: true,
+          page: currentPage,
+          nowPlaying: true,
+        },
+        "",
+        window.location.href
+      );
+      hasNowPlayingHistory.current = true;
+      return;
+    }
+
+    if (hasNowPlayingHistory.current && currentState?.nowPlaying) {
+      hasNowPlayingHistory.current = false;
+      window.history.back();
+    }
+  }, [showNowPlaying, currentPage]);
 
   /* ========================= DATA STORES ========================= */
   const [playlists, setPlaylists] = useState([]);
