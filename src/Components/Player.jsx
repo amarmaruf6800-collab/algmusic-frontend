@@ -264,60 +264,75 @@ export default function Player({
     <>
       {/* ===================== MINI PLAYER BAR ===================== */}
       <div className="fixed inset-x-0 bottom-[64px] z-50 border-t border-[var(--border)] glass lg:bottom-0">
-        <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-3 py-2.5 sm:gap-5 sm:px-6 sm:py-3">
+        <button
+          type="button"
+          onClick={() => setShowNowPlaying(true)}
+          aria-label={`Open now playing: ${song.title}`}
+          className="absolute inset-0 z-0 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+        />
+        <div className="pointer-events-none relative z-10 mx-auto flex max-w-[1600px] items-center gap-3 px-3 py-2.5 sm:gap-5 sm:px-6 sm:py-3">
           {/* Info */}
-          <div className="flex min-w-0 flex-1 items-center gap-3 sm:w-64 sm:flex-none sm:gap-3">
+          <div className="pointer-events-none flex min-w-0 flex-1 items-center gap-3 sm:w-64 sm:flex-none sm:gap-3">
             <button
               onClick={() => setShowNowPlaying(true)}
-              className="group relative h-14 w-14 shrink-0 overflow-hidden rounded-xl shadow-lg sm:h-14 sm:w-14"
+              className="group pointer-events-auto relative h-14 w-14 shrink-0 overflow-hidden rounded-xl shadow-lg sm:h-14 sm:w-14"
             >
               <Thumbnail src={song.thumbnail} alt={song.title} rounded="rounded-xl" />
               <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
                 <Maximize2 size={18} className="text-white" />
               </span>
             </button>
-            <div className="min-w-0">
+            <button
+              type="button"
+              onClick={() => setShowNowPlaying(true)}
+              className="pointer-events-auto min-w-0 text-left"
+              aria-label={`Open now playing: ${song.title}`}
+            >
               <p className="marquee truncate text-sm font-semibold text-white">
                 <span>{song.title}</span>
               </p>
               <p className="truncate text-xs text-white/50">{song.artist}</p>
-            </div>
+            </button>
             <button
               onClick={() => onLike(song)}
               className={cn(
-                "ml-1 hidden h-8 w-8 shrink-0 items-center justify-center rounded-full transition sm:flex",
+                "pointer-events-auto ml-1 hidden h-8 w-8 shrink-0 items-center justify-center rounded-full transition sm:flex",
                 isLiked ? "text-pink-400" : "text-white/45 hover:text-white"
               )}
+              aria-label={isLiked ? "Remove from liked songs" : "Add to liked songs"}
             >
               <Heart size={17} fill={isLiked ? "currentColor" : "none"} />
             </button>
           </div>
 
           {/* Center controls */}
-          <div className="flex flex-1 flex-col items-center gap-1.5">
-            <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="pointer-events-none flex flex-1 flex-col items-center gap-1.5">
+            <div className="pointer-events-none flex items-center gap-1.5 sm:gap-3">
               <button
                 onClick={() => setShuffle((s) => !s)}
                 className={cn(
-                  "hidden h-8 w-8 items-center justify-center rounded-full transition sm:flex",
+                  "pointer-events-auto hidden h-8 w-8 items-center justify-center rounded-full transition sm:flex",
                   shuffle ? "text-[var(--accent)]" : "text-white/45 hover:text-white"
                 )}
                 title="Shuffle"
+                aria-label="Toggle shuffle"
               >
                 <Shuffle size={16} />
               </button>
 
               <button
                 onClick={prevSong}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-white/85 transition hover:text-white"
+                className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full text-white/85 transition hover:text-white"
                 title="Previous"
+                aria-label="Previous song"
               >
                 <SkipBack size={19} fill="currentColor" />
               </button>
 
               <button
                 onClick={togglePlay}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--text)] text-[var(--bg)] shadow-xl transition hover:scale-105 active:scale-95"
+                className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-[var(--text)] text-[var(--bg)] shadow-xl transition hover:scale-105 active:scale-95"
+                aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
                   <Pause size={20} fill="currentColor" />
@@ -328,8 +343,9 @@ export default function Player({
 
               <button
                 onClick={nextSong}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-white/85 transition hover:text-white"
+                className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full text-white/85 transition hover:text-white"
                 title="Next"
+                aria-label="Next song"
               >
                 <SkipForward size={19} fill="currentColor" />
               </button>
@@ -337,10 +353,11 @@ export default function Player({
               <button
                 onClick={cycleRepeat}
                 className={cn(
-                  "relative hidden h-8 w-8 items-center justify-center rounded-full transition sm:flex",
+                  "pointer-events-auto relative hidden h-8 w-8 items-center justify-center rounded-full transition sm:flex",
                   repeat !== "off" ? "text-[var(--accent)]" : "text-white/45 hover:text-white"
                 )}
                 title="Repeat"
+                aria-label="Change repeat mode"
               >
                 {repeat === "one" ? <Repeat1 size={16} /> : <Repeat size={16} />}
               </button>
@@ -358,7 +375,7 @@ export default function Player({
                   seek(e, e.currentTarget);
                 }}
                 onPointerMove={(e) => e.buttons === 1 && seek(e, e.currentTarget)}
-                className="group relative flex h-8 flex-1 cursor-pointer touch-none items-center rounded-full bg-transparent"
+                className="pointer-events-auto group relative flex h-8 flex-1 cursor-pointer touch-none items-center rounded-full bg-transparent"
               >
                 <div className="absolute inset-x-0 h-1.5 rounded-full bg-white/12" />
                 <div
@@ -377,12 +394,12 @@ export default function Player({
           </div>
 
           {/* Right controls */}
-          <div className="flex w-auto items-center gap-1.5 sm:w-64 sm:justify-end sm:gap-2">
+          <div className="pointer-events-none flex w-auto items-center gap-1.5 sm:w-64 sm:justify-end sm:gap-2">
             <button
               onClick={() => { setShowNowPlaying(true); setShowTimerMenu(true); }}
               title="Sleep timer"
               aria-label="Sleep timer"
-              className={cn("flex items-center gap-1 rounded-full p-2", sleepMinutes ? "text-[var(--accent)]" : "text-white/45 hover:text-white")}
+              className={cn("pointer-events-auto flex items-center gap-1 rounded-full p-2", sleepMinutes ? "text-[var(--accent)]" : "text-white/45 hover:text-white")}
             >
               <Timer size={17} />
               {sleepMinutes > 0 && <span className="text-xs tabular-nums">{formatTime(sleepLeft)}</span>}
@@ -390,36 +407,39 @@ export default function Player({
             <button
               onClick={() => { setShowLyrics(true); setShowNowPlaying(true); }}
               className={cn(
-                "hidden h-9 w-9 items-center justify-center rounded-full transition md:flex",
+                "pointer-events-auto hidden h-9 w-9 items-center justify-center rounded-full transition md:flex",
                 showLyrics ? "text-[var(--accent)]" : "text-white/45 hover:text-white"
               )}
               title="Lyrics"
+              aria-label="Open lyrics"
             >
               <Mic2 size={17} />
             </button>
             <button
               onClick={() => setShowQueue((s) => !s)}
               className={cn(
-                "hidden h-9 w-9 items-center justify-center rounded-full transition md:flex",
+                "pointer-events-auto hidden h-9 w-9 items-center justify-center rounded-full transition md:flex",
                 showQueue ? "text-[var(--accent)]" : "text-white/45 hover:text-white"
               )}
               title="Queue"
+              aria-label="Toggle queue"
             >
               <ListMusic size={17} />
             </button>
             <div className="hidden items-center gap-2 lg:flex">
               <VolIcon
                 size={18}
-                className="text-white/55"
+                className="pointer-events-auto cursor-pointer text-white/55"
                 onClick={() => setMuted((m) => !m)}
               />
               <input
+                aria-label="Volume"
                 type="range"
                 min={0}
                 max={100}
                 value={muted ? 0 : volume}
                 onChange={onVolume}
-                className="h-1 w-24 cursor-pointer rounded-full bg-white/15 accent-[var(--accent)]"
+                className="pointer-events-auto h-1 w-24 cursor-pointer rounded-full bg-white/15 accent-[var(--accent)]"
               />
             </div>
           </div>
