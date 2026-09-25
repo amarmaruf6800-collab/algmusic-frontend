@@ -77,6 +77,62 @@ function App() {
   /* ========================== NAVIGATION ========================== */
   const [currentPage, setCurrentPage] = useState("home");
 
+  const isPopState = useRef(false);
+  const isFirstNavigation = useRef(true);
+  const lastNavigatedPage = useRef("home");
+
+  useEffect(() => {
+    window.history.replaceState(
+      {
+        algmusic: true,
+        page: "home",
+      },
+      "",
+      window.location.href
+    );
+
+    const handlePopState = (event) => {
+      const page = event.state?.algmusic
+        ? event.state.page
+        : "home";
+
+      isPopState.current = page !== lastNavigatedPage.current;
+      setCurrentPage(page);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isFirstNavigation.current) {
+      isFirstNavigation.current = false;
+      lastNavigatedPage.current = currentPage;
+      return;
+    }
+
+    if (currentPage === lastNavigatedPage.current) return;
+
+    lastNavigatedPage.current = currentPage;
+
+    if (isPopState.current) {
+      isPopState.current = false;
+      return;
+    }
+
+    window.history.pushState(
+      {
+        algmusic: true,
+        page: currentPage,
+      },
+      "",
+      window.location.href
+    );
+  }, [currentPage]);
+
   /* ============================ PLAYBACK ========================== */
   const [queue, setQueue] = useState([]);
   const [currentSong, setCurrentSong] = useState(null);
@@ -700,7 +756,7 @@ function App() {
             {currentPage === "artist" && selectedArtist && (
               <ArtistPage
                 artist={selectedArtist}
-                onBack={() => setCurrentPage("home")}
+                onBack={() => window.history.back()}
                 onSongClick={(song, q) => selectSong(song, q)}
                 onAlbumClick={selectAlbum}
               />
@@ -709,7 +765,7 @@ function App() {
             {currentPage === "album" && selectedAlbum && (
               <AlbumPage
                 album={selectedAlbum}
-                onBack={() => setCurrentPage("home")}
+                onBack={() => window.history.back()}
                 onSongClick={(song, q) => selectSong(song, q)}
               />
             )}
